@@ -1,14 +1,31 @@
-import express from "express";
-import dotenv from "dotenv"
+const express = require("express");
+const bodyParser = require("body-parser");
+const userRoutes = require("./routers/userRoute.js");
+const adminRoutes = require("./routers/adminRoutes.js");
+// const trainRoutes = require('./routers/trainRoutes');
+// const bookingRoutes=require('./routers/bookingRoutes')
+const sequelize = require("./config/config.js");
 
-dotenv.config();
+// require("dotenv").config();
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({extended: true}))
+const port = process.env.PORT || 3000;
 
-const PORT = 4000;
+app.use(bodyParser.json());
 
-app.listen(PORT, ()=>{
-    console.log(`PORT RUNNING AT ${PORT}`);
-})
+app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
+// app.use("/api/trains", trainRoutes);
+// app.use("/api/bookings", bookingRoutes);
+
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+      console.log("Database connected.");
+    });
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });
