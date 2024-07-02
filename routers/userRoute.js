@@ -3,6 +3,8 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User.js");
+const { Newsshortsshorts } = require("../models/Newsshorts.js");
+
 const authMiddleware = require("../middlewares/auth.js");
 
 router.post("/register", async (req, res) => {
@@ -63,4 +65,32 @@ router.post("/login", async (req, res) => {
   }
 });
 
+exports.getFeed = async (req, res) => {
+  try {
+    const { filter, search } = req.query;
+    let filters = filter ? JSON.parse(filter) : {};
+    let searchParams = search ? JSON.parse(search) : {};
+
+    let query = {
+      where: {},
+      include: [
+        {
+          model: Newsshorts,
+          as: "Newsshorts",
+          where: { ...filters, ...searchParams },
+        },
+      ],
+    };
+
+    const feed = await Newsshorts.findAll(query);
+
+    return res.status(200).json({
+      message: "Feed fetched successfully",
+      data: feed,
+    });
+  } catch (error) {
+    console.error("Error fetching feed:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 module.exports = router;

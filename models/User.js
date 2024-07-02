@@ -17,6 +17,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    liked: {
+      type: DataTypes.Boolean,
+      allowNull: false,
+    },
+    voted: {
+      type: DataTypes.Boolean,
+      allowNull: false,
+    },
   });
 
   return User;
